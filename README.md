@@ -47,7 +47,7 @@ SwiftLoc is built with scalability in mind, separating concerns into clear layer
 
 1. **Clone the repository:**
    ```bash
-   git clone [https://github.com/Paehkun/SwiftLoc-Tracker.git](https://github.com/Paehkun/SwiftLoc.git)
+   git clone [https://github.com/Paehkun/SwiftLoc.git](https://github.com/Paehkun/SwiftLoc.git)
 
 2. **Navigate to the project folder:**
 
