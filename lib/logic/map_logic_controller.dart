@@ -32,6 +32,40 @@ class MapLogicController {
 
     _activeCircleCode = currentCircleCode;
 
+    // --- REMOTE PING LISTENER (TAMBAH KAT SINI) ---
+    if (_activeCircleCode != "NOT_IN_CIRCLE") {
+      FirebaseDatabase.instance
+          .ref('circles/$_activeCircleCode/members/$myId/lastRequest')
+          .onValue
+          .listen((event) async {
+        if (event.snapshot.value != null) {
+          print("PING RECEIVED: Someone requested my fresh location!");
+          
+          try {
+            Position forcePos = await Geolocator.getCurrentPosition(
+                locationSettings: const LocationSettings(accuracy: LocationAccuracy.high));
+            
+            int batteryLevel = 100;
+            try { batteryLevel = await _battery.batteryLevel; } catch (_) {}
+
+            // Terus hantar ke Firebase tanpa tunggu
+            await _locationService.updateFirebaseLocation(
+              circleCode: _activeCircleCode,
+              userId: myId,
+              pos: forcePos,
+              status: "Live Update",
+              battery: batteryLevel,
+            );
+            
+            _lastFirebaseUpdateTime = DateTime.now();
+            print("PING SUCCESS: Fresh location sent to Firebase.");
+          } catch (e) {
+            print("Error during force update: $e");
+          }
+        }
+      });
+    }
+
     // --- INITIAL PING ---
     try {
       Position firstPos = await Geolocator.getCurrentPosition(
@@ -58,7 +92,7 @@ class MapLogicController {
     }
 
     // --- SETUP BACKGROUND SETTINGS ---
-final AndroidSettings androidSettings = AndroidSettings(
+  final AndroidSettings androidSettings = AndroidSettings(
   accuracy: LocationAccuracy.high,
   distanceFilter: 2, 
   intervalDuration: const Duration(seconds: 5), 
@@ -197,6 +231,14 @@ final AndroidSettings androidSettings = AndroidSettings(
     
     _activeCircleCode = "NOT_IN_CIRCLE";
     print("Logic: Cleanup complete.");
+  }
+
+  Future<void> triggerRemoteUpdate(String circleCode, String memberId) async {
+    try {
+      await _locationService.triggerRemoteUpdate(circleCode, memberId);
+    } catch (e) {
+      print("Error triggering remote update: $e");
+    }
   }
 
   void stopListeningToMembers() {

@@ -399,13 +399,25 @@ class _SwiftLocMapState extends State<SwiftLocMap> {
               members: _currentMembers, 
               mySpeed: _currentSpeed,
               myStatus: _currentStatus,
-              onMemberTap: (member) {
+              onMemberTap: (member) async{
                 // Go to member location when tap name
                 setState(() => _isFollowingUser = false);
                 _mapController.move(
                   LatLng(member.lat, member.lng), 
                   17.0, 
                 );
+                await _logic.triggerRemoteUpdate(currentCircleCode, member.id);
+
+                // 4. (Optional) Bagitahu user tengah loading
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text("Requesting fresh location from ${member.name}..."),
+                      duration: const Duration(seconds: 2),
+                      behavior: SnackBarBehavior.floating,
+                    ),
+                  );
+                }
               },
             ),
           ],
