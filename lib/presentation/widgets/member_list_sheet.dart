@@ -6,7 +6,7 @@ class MemberListSheet extends StatelessWidget {
   final List<Member> members;
   final double mySpeed;
   final String myStatus;
-  // 1. Tambah callback function ni
+  final String? loadingMemberId;
   final Function(Member) onMemberTap;
 
   const MemberListSheet({
@@ -14,7 +14,8 @@ class MemberListSheet extends StatelessWidget {
     required this.members,
     required this.mySpeed,
     required this.myStatus,
-    required this.onMemberTap, // 2. Masukkan dalam constructor
+    this.loadingMemberId,
+    required this.onMemberTap, 
   });
 
   IconData _getBatteryIcon(int level) {
@@ -138,19 +139,17 @@ class MemberListSheet extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 10),
                   itemBuilder: (context, index) {
                     final m = members[index];
+                    final bool isLoadingThisMember = (loadingMemberId == m.id);
+
                     return ListTile(
-                      // 3. SEKARANG KITA TAMBAH ONTAP KAT SINI
                       onTap: () => onMemberTap(m),
-                      contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 20, vertical: 4),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
                       leading: CircleAvatar(
                         radius: 22,
                         backgroundColor: cardBg,
-                        // Check  profileUrl
                         backgroundImage: (m.profileUrl.isNotEmpty) 
                             ? MemoryImage(base64Decode(m.profileUrl)) 
                             : null,
-                        // default image
                         child: (m.profileUrl.isEmpty)
                             ? Text(
                                 m.name.isNotEmpty ? m.name[0].toUpperCase() : "?",
@@ -168,26 +167,39 @@ class MemberListSheet extends StatelessWidget {
                             fontWeight: FontWeight.bold,
                             fontSize: 15),
                       ),
-                      subtitle: Row(
-                        children: [
-                          Icon(
-                            m.status == "Driving"
-                                ? Icons.directions_car
-                                : Icons.person_pin_circle,
-                            size: 14,
-                            color: accentBlue,
+                      
+                      // --- BAHAGIAN SUBTITLE YANG DIKEMASKINI ---
+                      subtitle: isLoadingThisMember 
+                        ? const Text(
+                            "Requesting current location...",
+                            style: TextStyle(
+                              color: Colors.blueAccent, 
+                              fontSize: 12, 
+                              fontWeight: FontWeight.bold,
+                              fontStyle: FontStyle.italic
+                            ),
+                          )
+                        : Row(
+                            children: [
+                              Icon(
+                                m.status == "Driving"
+                                    ? Icons.directions_car
+                                    : Icons.person_pin_circle,
+                                size: 14,
+                                color: accentBlue,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(m.status,
+                                  style: const TextStyle(
+                                      fontSize: 12, color: Colors.white54)),
+                              const Text(" • ", style: TextStyle(color: Colors.white24)),
+                              Text(
+                                _formatLastSeen(m.lastSeen),
+                                style: const TextStyle(fontSize: 11, color: Colors.white38),
+                              ),
+                            ],
                           ),
-                          const SizedBox(width: 4),
-                          Text(m.status,
-                              style: const TextStyle(
-                                  fontSize: 12, color: Colors.white54)),
-                          const Text(" • ", style: TextStyle(color: Colors.white24)),
-                          Text(
-                            _formatLastSeen(m.lastSeen),
-                            style: const TextStyle(fontSize: 11, color: Colors.white38),
-                          ),
-                        ],
-                      ),
+                          
                       trailing: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.end,

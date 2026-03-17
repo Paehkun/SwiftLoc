@@ -34,6 +34,7 @@ class _SwiftLocMapState extends State<SwiftLocMap> {
   String get myId => FirebaseAuth.instance.currentUser?.uid ?? "unknown";
   String myName = FirebaseAuth.instance.currentUser?.email?.split('@')[0] ?? "User";
   String? myProfileUrl;
+  String? _loadingMemberId; 
   
   String currentCircleCode = "NOT_IN_CIRCLE";
   String circleName = "No Circle Joined";
@@ -399,24 +400,21 @@ class _SwiftLocMapState extends State<SwiftLocMap> {
               members: _currentMembers, 
               mySpeed: _currentSpeed,
               myStatus: _currentStatus,
+              loadingMemberId: _loadingMemberId,
               onMemberTap: (member) async{
                 // Go to member location when tap name
-                setState(() => _isFollowingUser = false);
+                setState(() {
+                _isFollowingUser = false;
+                _loadingMemberId = member.id; 
+                });
                 _mapController.move(
                   LatLng(member.lat, member.lng), 
                   17.0, 
                 );
                 await _logic.triggerRemoteUpdate(currentCircleCode, member.id);
-
-                // 4. (Optional) Bagitahu user tengah loading
+                await Future.delayed(const Duration(seconds: 3));
                 if (mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text("Requesting fresh location from ${member.name}..."),
-                      duration: const Duration(seconds: 2),
-                      behavior: SnackBarBehavior.floating,
-                    ),
-                  );
+                  setState(() => _loadingMemberId = null); 
                 }
               },
             ),
