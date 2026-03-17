@@ -70,7 +70,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
 
           // LAYER 2: DRAGGABLE BOTTOM SHEET (Member list)
           DraggableScrollableSheet(
-            initialChildSize: 0.25, // Naik sikit supaya tajuk nampak jelas
+            initialChildSize: 0.25,
             minChildSize: 0.1,
             maxChildSize: 0.6,
             builder: (context, scrollController) {
@@ -82,9 +82,9 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                     BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 10, spreadRadius: 5)
                   ],
                 ),
-                child: Column( // Guna Column di luar supaya Header "Sticky" kat atas
+                child: Column( 
                   children: [
-                    // Handle Bar (Garis kelabu kat atas tu)
+                    // Handle Bar 
                     Center(
                       child: Container(
                         margin: const EdgeInsets.symmetric(vertical: 12),
@@ -97,7 +97,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                       ),
                     ),
                     
-                    // Tajuk yang sentiasa nampak
+                    // Title
                     const Padding(
                       padding: EdgeInsets.only(left: 20, bottom: 10),
                       child: Align(
@@ -114,7 +114,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                     ),
                     const Divider(height: 1),
 
-                    // List Item yang boleh scroll
+                    // List Item scrollable
                     Expanded(
                       child: ListView(
                         controller: scrollController,
@@ -147,7 +147,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
         ],
       ),
       
-      // Floating Action Button untuk simulasi
+      // Floating Action Button 
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 95), 
         child: FloatingActionButton(

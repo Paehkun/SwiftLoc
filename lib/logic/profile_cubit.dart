@@ -24,8 +24,7 @@ class ProfileCubit extends Cubit<ProfileState> {
 
   ProfileCubit() : super(ProfileInitial());
 
-  /// 1. Ambil profile dari Master Node (users/$uid/profile)
-  /// Fungsi ni boleh dipanggil tanpa hantar UID (guna current user)
+  /// 1. Take profile from Master Node (users/$uid/profile)
   Future<void> loadProfile() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
@@ -33,10 +32,8 @@ class ProfileCubit extends Cubit<ProfileState> {
     }
   }
 
-  /// 2. Fungsi spesifik untuk fetch guna UID (Sangat berguna masa Bootstrap/Login)
   Future<void> fetchProfile(String uid) async {
     try {
-      // Kita tak emit(ProfileLoading) kat sini supaya UI tak 'flicker' masa background update
       final snapshot = await _dbRef.child('users/$uid/profile/profileBase64').get();
       
       if (snapshot.exists && snapshot.value != null) {
@@ -51,25 +48,22 @@ class ProfileCubit extends Cubit<ProfileState> {
     }
   }
 
-  /// 3. Pilih gambar, convert ke Base64, dan simpan di Master Node SAHAJA
   Future<void> pickAndUploadImage() async {
     try {
       emit(ProfileLoading());
       
       final File? pickedFile = await _imageService.pickImage(
-        maxWidth: 250,    // Saiz ideal untuk marker
-        imageQuality: 50,  // Jaga saiz database
+        maxWidth: 250,    
+        imageQuality: 50,  
       );
       
       if (pickedFile == null) {
-        // Jika user cancel, kita cuba load balik data sedia ada
         loadProfile();
         return;
       }
 
       List<int> imageBytes = await pickedFile.readAsBytes();
       
-      // Limit 150KB sebelum encode
       if (imageBytes.length > 300000) {
          emit(ProfileError("Gambar terlalu besar. Sila pilih bawah 150KB."));
          return;
@@ -79,7 +73,6 @@ class ProfileCubit extends Cubit<ProfileState> {
       final user = FirebaseAuth.instance.currentUser;
       if (user == null) throw "User not logged in";
 
-      // KEMASKINI MASTER PROFILE SAHAJA
       await _dbRef.child('users/${user.uid}/profile').update({
         'profileBase64': base64Image,
         'lastUpdated': ServerValue.timestamp,
@@ -93,7 +86,7 @@ class ProfileCubit extends Cubit<ProfileState> {
     }
   }
 
-  /// 4. Clear state masa logout
+  /// 4. Clear state during logout
   void clearProfile() {
     emit(ProfileInitial());
   }

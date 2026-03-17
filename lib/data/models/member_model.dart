@@ -33,13 +33,11 @@ class Member {
     return 0.0;
   }
 
-  // Kita buat check yang lebih 'ganas' kat sini
   int parseTimestamp(Map data) {
-    // Check 'lastSeen' (huruf besar S)
+    // Check 'lastSeen' 
     if (data['lastSeen'] is int) return data['lastSeen'];
     // Check 'last_updated' (format Firebase ServerValue)
     if (data['last_updated'] is int) return data['last_updated'];
-    // Kalau dua-dua tak ada, baru guna masa sekarang
     return DateTime.now().millisecondsSinceEpoch;
   }
 
@@ -52,7 +50,7 @@ class Member {
     status: data['status'] ?? 'Stationary',
     battery: data['battery'] ?? 100,
     profileUrl: data['profileUrl'] ?? "",
-    lastSeen: parseTimestamp(data), // Gunakan helper kat atas
+    lastSeen: parseTimestamp(data), 
   );
 }
 }

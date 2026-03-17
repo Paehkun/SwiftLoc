@@ -7,7 +7,6 @@ import '../../data/models/member_model.dart';
 
 class MapMarkerHelper {
   
-  // FUNGSI UTAMA: Ini yang MapScreen kau cari tadi
   static Widget buildMarkerWidget({
     required String name,
     required String status,
@@ -59,10 +58,9 @@ class MapMarkerHelper {
                   ? Image(
                       image: profileImage,
                       fit: BoxFit.cover,
-                      width: 36, // Diameter (radius 18 * 2)
+                      width: 36,
                       height: 36,
                       filterQuality: FilterQuality.medium,
-                      // Jika gambar gagal load dari network
                       errorBuilder: (context, error, stackTrace) => isMe
                           ? const Icon(Icons.person, color: Colors.white, size: 20)
                           : Text(
@@ -114,11 +112,11 @@ static Marker buildFriendMarker(Member m, Function(Member) onKick) {
     return Marker(
       point: m.position,
       width: 65,
-      height: 80, // Tambah tinggi sikit supaya shadow dan label tak kena cut
+      height: 80, 
       alignment: Alignment.center,
       child: GestureDetector(
         onTap: () => onKick(m),
-        behavior: HitTestBehavior.opaque, // Bagi senang detect tap walaupun pada area kosong
+        behavior: HitTestBehavior.opaque, 
         child: buildMarkerWidget(
           name: m.name,
           status: m.status,

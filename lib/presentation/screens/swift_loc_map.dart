@@ -260,7 +260,6 @@ class _SwiftLocMapState extends State<SwiftLocMap> {
                   options: MapOptions(
                     initialCenter: _currentPos ?? const LatLng(3.1390, 101.6869), 
                     initialZoom: 18,
-                    // --- BARU: Detect kalau user gerakkan map secara manual ---
                     onPositionChanged: (camera, hasGesture) {
                       if (hasGesture && _isFollowingUser) {
                         setState(() => _isFollowingUser = false);
@@ -269,7 +268,7 @@ class _SwiftLocMapState extends State<SwiftLocMap> {
                   ),
                   children: [
                     Opacity(
-                      opacity: 0.8, // Adjust kepekatan kat sini (0.0 - 1.0)
+                      opacity: 0.8, 
                       child: TileLayer(
                         urlTemplate: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
                         subdomains: ['a', 'b', 'c', 'd'],
@@ -305,7 +304,6 @@ class _SwiftLocMapState extends State<SwiftLocMap> {
                   circleCode: currentCircleCode,
                   allCircles: _myCirclesList,
                   myName: myName,
-                  // Guna currentImage dari Cubit. Kalau null, baru guna myProfileUrl lama.
                   myProfileImage: currentImage ?? myProfileUrl, 
                   onCircleChanged: (code, name) {
                     _logic.stopListeningToMembers(); 
@@ -382,7 +380,7 @@ class _SwiftLocMapState extends State<SwiftLocMap> {
                     heroTag: "recenter",
                     backgroundColor: darkBg,
                     onPressed: () {
-                      // --- UPDATE: Recenter & Aktifkan semula Following ---
+                      // --- Recenter & Following ---
                       setState(() => _isFollowingUser = true);
                       if (_currentPos != null) {
                         _mapController.move(_currentPos!, 17);
@@ -402,7 +400,7 @@ class _SwiftLocMapState extends State<SwiftLocMap> {
               mySpeed: _currentSpeed,
               myStatus: _currentStatus,
               onMemberTap: (member) {
-                // Bila tap member lain, kita stop auto-follow diri sendiri
+                // Go to member location when tap name
                 setState(() => _isFollowingUser = false);
                 _mapController.move(
                   LatLng(member.lat, member.lng), 
@@ -466,19 +464,14 @@ class _SwiftLocMapState extends State<SwiftLocMap> {
     currentCircleCode = code;
     circleName = name;
     _isFollowingUser = true; 
-    _friendMarkers = []; // Clear marker lama supaya tak serabut
-    _currentMembers = []; // Clear list member lama
+    _friendMarkers = []; // Clear marker 
+    _currentMembers = []; // Clear list 
   });
 
-  // 1. Berhenti dengar member dari circle lama
   _logic.stopListeningToMembers(); 
-  
-  // 2. Mula dengar member dari circle baru
+
   _startListeningToMembers(); 
 
-  // 3. JANGAN panggil _startLocationTracking()!
-  // Sebaliknya, panggil fungsi untuk kemaskini circle code dalam logic sahaja.
-  // Ini supaya GPS stream sedia ada terus jalan, cuma 'destinasi' hantar data je tukar.
   _logic.updateCurrentCircle(code); 
 
   debugPrint("Circle updated to $code in Foreground & SharedPreferences");
@@ -490,17 +483,13 @@ class _SwiftLocMapState extends State<SwiftLocMap> {
     (newName) async {
       if (newName.isNotEmpty) {
         try {
-          // 1. Update Master sahaja. Cukup sekali!
           await _circleService.updateMasterProfile(myId, newName, myProfileUrl);
           
-          // 2. Simpan lokal
           final prefs = await SharedPreferences.getInstance();
           await prefs.setString('my_saved_name', newName);
 
-          // 3. Update UI terus
           setState(() => myName = newName);
           
-          // Restart tracking (tanpa hantar nama ke Firebase)
           _startListeningToMembers();
 
           ScaffoldMessenger.of(context).showSnackBar(

@@ -20,7 +20,6 @@ class MapLogicController {
   DateTime? _lastFirebaseUpdateTime;
   String _lastSentStatus = "Stationary";
   
-  // Variabel untuk simpan circle code aktif supaya stream tak perlu restart
   String _activeCircleCode = "NOT_IN_CIRCLE";
 
   /// 1. START TRACKING (GPS & HEARTBEAT)
@@ -29,7 +28,6 @@ class MapLogicController {
     required String myId,
     required Function(LatLng, double, String, int) onUpdate,
   }) async {
-    // Elakkan double stream
     if (positionSubscription != null) return;
 
     _activeCircleCode = currentCircleCode;
@@ -60,11 +58,10 @@ class MapLogicController {
     }
 
     // --- SETUP BACKGROUND SETTINGS ---
-    // Cari line 58
 final AndroidSettings androidSettings = AndroidSettings(
   accuracy: LocationAccuracy.high,
-  distanceFilter: 2, // <--- Tukar dari 5 ke 2
-  intervalDuration: const Duration(seconds: 5), // <--- Tukar dari 10 ke 5
+  distanceFilter: 2, 
+  intervalDuration: const Duration(seconds: 5), 
   foregroundNotificationConfig: const ForegroundNotificationConfig(
     notificationTitle: "SwiftLoc Live Tracking",
     notificationText: "Sharing your location with your circle",
@@ -72,7 +69,7 @@ final AndroidSettings androidSettings = AndroidSettings(
   ),
 );
 
-    // --- HEARTBEAT LOGIC (10 MINIT) ---
+    // --- HEARTBEAT LOGIC (10 Minute) ---
     _heartbeatTimer = Timer.periodic(const Duration(minutes: 10), (timer) async {
       if (_activeCircleCode != "NOT_IN_CIRCLE") {
         int batteryLevel = 100;
@@ -98,11 +95,11 @@ final AndroidSettings androidSettings = AndroidSettings(
       double speedKmH = pos.speed * 3.6; // Convert m/s to km/h
       LatLng currentPos = LatLng(pos.latitude, pos.longitude);
 
-      // --- LOGIC BARU: DRIVING VS STATIONARY ---
-      // Jika speed > 5 km/h (kira-kira 1.4 m/s), kita anggap Driving
+      // --- DRIVING VS STATIONARY ---
+      // IF speed > 5 km/h = driving
       String status = (pos.speed > 1.4) ? "Driving" : "Stationary";
 
-      // UI Update terus (Bagi map nampak smooth dan marker gerak)
+      // UI Update follow drive
       onUpdate(currentPos, speedKmH, status, batteryLevel);
 
       // --- FIREBASE UPDATE LOGIC (DYNAMIC) ---
@@ -110,10 +107,6 @@ final AndroidSettings androidSettings = AndroidSettings(
         DateTime now = DateTime.now();
         int secSinceLastUpdate = now.difference(_lastFirebaseUpdateTime ?? DateTime(0)).inSeconds;
 
-        // Syarat hantar ke Firebase:
-        // 1. Status bertukar secara drastik (Driving <-> Stationary)
-        // 2. Jika Driving: Hantar setiap 10 saat (Bagus untuk track dalam jem)
-        // 3. Jika Stationary: Hantar setiap 30 saat (Bagus untuk track gerak dlm rumah)
         bool shouldUpdate = (status != _lastSentStatus) || 
                            (status == "Driving" && secSinceLastUpdate >= 10) || 
                            (status == "Stationary" && secSinceLastUpdate >= 30);
@@ -135,10 +128,10 @@ final AndroidSettings androidSettings = AndroidSettings(
     });
   }
 
-  /// Update circle code tanpa restart stream
+  /// Update circle code 
   void updateCurrentCircle(String newCode) {
     _activeCircleCode = newCode;
-    _lastFirebaseUpdateTime = null; // Trigger update segera untuk circle baru
+    _lastFirebaseUpdateTime = null; 
     print("Logic: Tracking node updated to $newCode");
   }
 

@@ -21,7 +21,7 @@ class LocationService {
   return _dbRef.child("circles/$circleCode/members").onValue;
 }
 
-  // Dalam LocationService class
+  // In LocationService class
 Future<void> updateFirebaseLocation({
   required String circleCode,
   required String userId,
@@ -29,7 +29,7 @@ Future<void> updateFirebaseLocation({
   required String status,
   required int battery,
 }) async {
-  // Kita cuma update data yang "selalu berubah" sahaja
+  // Update only always change data
   await _dbRef.child('circles/$circleCode/members/$userId').update({
     'lat': pos.latitude,
     'lng': pos.longitude,
@@ -37,11 +37,9 @@ Future<void> updateFirebaseLocation({
     'status': status,
     'battery': battery,
     'lastSeen': ServerValue.timestamp,
-    // Kita TAK HANTAR nama dan gambar kat sini dah!
   });
 }
 
-// Fungsi baru untuk update profile (panggil masa mula-mula login/set profile)
 Future<void> updateUserProfile(String userId, String name, String? imageUrl) async {
   await _dbRef.child('users/$userId/profile').set({
     'name': name,

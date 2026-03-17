@@ -6,7 +6,7 @@ class CircleDialogHelper {
     Function(String) onSuccess, {
     String title = "Create New Circle", 
     String buttonText = "Create",
-    String hintText = "Enter circle name", // 1. TAMBAH PARAMETER INI
+    String hintText = "Enter circle name", 
   }) {
     final TextEditingController controller = TextEditingController();
 
@@ -18,7 +18,7 @@ class CircleDialogHelper {
         content: TextField(
           controller: controller,
           autofocus: true,
-          decoration: InputDecoration( // 2. BUANG 'const' DAN GUNA VARIABLE hintText
+          decoration: InputDecoration( 
             hintText: hintText, 
             border: const OutlineInputBorder(),
           ),

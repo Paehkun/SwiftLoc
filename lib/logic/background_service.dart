@@ -48,24 +48,22 @@ class BackgroundLocService {
 void onStart(ServiceInstance service) async {
   DartPluginRegistrant.ensureInitialized();
   
-  // Init Firebase dalam isolate berasingan
+  // Init Firebase 
   await Firebase.initializeApp();
   final DatabaseReference dbRef = FirebaseDatabase.instance.ref();
   
   Position? lastPosition;
   DateTime? lastUpdateTime;
 
-  // Update setiap 15 saat untuk keseimbangan antara Live vs Bateri
+  // Update every 15 second during driving
   Timer.periodic(const Duration(seconds: 12), (timer) async {
     final prefs = await SharedPreferences.getInstance();
     final String? uid = prefs.getString('my_uid'); 
     final String? circleCode = prefs.getString('last_circle_code');
 
-    // Jika tak login atau tak masuk circle, jangan bazir bateri
     if (uid == null || circleCode == null || circleCode == "NOT_IN_CIRCLE") return;
 
     try {
-      // WAJIB LocationAccuracy.high untuk detect speed memandu
       Position currentPos = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
         timeLimit: const Duration(seconds: 8),
@@ -83,9 +81,9 @@ void onStart(ServiceInstance service) async {
       
       // LOGIC UPDATE:
       // 1. First time run
-      // 2. Bergerak lebih 10 meter
-      // 3. Kelajuan melebihi 5km/h (tengah gerak)
-      // 4. Dah lebih 5 minit tak update (Heartbeat)
+      // 2. Move more than 10 meter
+      // 3. Spped exceed 15km/h 
+      // 4. After 5 minute update (Heartbeat)
       
       bool shouldUpdate = lastPosition == null || 
                          distance > 10 || 
@@ -96,7 +94,6 @@ void onStart(ServiceInstance service) async {
         lastPosition = currentPos;
         lastUpdateTime = DateTime.now();
 
-        // Tentukan status yang konsisten dengan Foreground UI
         String status = "Stationary";
         if (speedKmH > 15) {
           status = "Driving";
@@ -109,8 +106,8 @@ void onStart(ServiceInstance service) async {
           "lng": currentPos.longitude,
           "speed": speedKmH.toInt(),
           "status": status,
-          "lastSeen": ServerValue.timestamp, // Gunakan camelCase supaya match dengan Model
-          "battery": 0, // Opsional: boleh tambah battery_plus kalau nak hantar data bateri juga
+          "lastSeen": ServerValue.timestamp, 
+          "battery": 0, 
         });
 
         if (service is AndroidServiceInstance) {

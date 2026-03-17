@@ -7,7 +7,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/foundation.dart'; // Perlu untuk debugPrint
 
 class CircleService {
-  // Gunakan instance sedia ada atau melalui dotenv
+  // Use .env
   final DatabaseReference _dbRef = FirebaseDatabase.instanceFor(
     app: Firebase.app(),
     databaseURL: dotenv.env['FIREBASE_DB_URL']!,
@@ -21,7 +21,7 @@ class CircleService {
     return List.generate(6, (index) => chars[Random().nextInt(chars.length)]).join();
   }
 
-  // --- Circle Functions ---
+  //Circle Functions
 
   Future<String> createCircle(String circleName, String adminId, String adminName) async {
     String newCode = _generateRandomCode();
@@ -104,11 +104,10 @@ class CircleService {
     });
   }
 
-  // --- Member & Profile Functions ---
+  //Member & Profile Functions
 
   Future<void> updateMemberName(String circleCode, String uid, String newName) async {
     try {
-      // FIX: Tukar _db kepada _dbRef supaya konsisten dengan variable di atas
       await _dbRef.child('circles/$circleCode/members/$uid').update({
         'name': newName,
       });
@@ -126,7 +125,7 @@ class CircleService {
       await ref.putFile(imageFile);
       String downloadUrl = await ref.getDownloadURL();
 
-      // Kemaskini URL dalam Realtime Database
+      // Update URL in Realtime Database
       await _dbRef.child("circles/$circleCode/members/$userId").update({
         "profileUrl": downloadUrl
       });

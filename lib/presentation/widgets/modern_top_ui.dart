@@ -205,8 +205,7 @@ class ModernTopUI extends StatelessWidget {
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
           ),
           const Divider(color: Colors.white10),
-          
-          // Option 1: Update Profile Image
+
           ListTile(
             leading: const Icon(Icons.photo_camera_rounded, color: Colors.blueAccent),
             title: const Text("Update Profile Image", style: TextStyle(color: Colors.white)),
@@ -215,8 +214,7 @@ class ModernTopUI extends StatelessWidget {
               onUpdateImage();
             },
           ),
-          
-          // Option 2: Edit Display Name
+
           ListTile(
             leading: const Icon(Icons.badge_outlined, color: Colors.blueAccent),
             title: const Text("Edit Display Name", style: TextStyle(color: Colors.white)),
@@ -231,8 +229,8 @@ class ModernTopUI extends StatelessWidget {
             leading: const Icon(Icons.logout_rounded, color: Colors.redAccent),
             title: const Text("Logout", style: TextStyle(color: Colors.redAccent)),
             onTap: () {
-              Navigator.pop(context); // Tutup BottomSheet dulu
-              _showLogoutConfirmation(context); // Panggil confirmation dialog
+              Navigator.pop(context); 
+              _showLogoutConfirmation(context); 
             },
           ),
           const SizedBox(height: 20),
@@ -259,8 +257,8 @@ class ModernTopUI extends StatelessWidget {
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
             onPressed: () {
-              Navigator.pop(context); // Tutup dialog
-              onLogout(); // Jalankan fungsi logout sebenar
+              Navigator.pop(context); 
+              onLogout(); 
             },
             child: const Text("Logout", style: TextStyle(color: Colors.white)),
           ),
