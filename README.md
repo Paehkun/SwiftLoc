@@ -1,4 +1,4 @@
-# SwiftLoc: Smart Circle Tracking System 🛰️
+# SwiftLoc: Smart Circle Tracking System 
 
 [![Flutter](https://img.shields.io/badge/Flutter-%2302569B.svg?style=for-the-badge&logo=Flutter&logoColor=white)](https://flutter.dev/)
 [![Firebase](https://img.shields.io/badge/firebase-%23039BE5.svg?style=for-the-badge&logo=firebase)](https://firebase.google.com/)
@@ -8,17 +8,17 @@
 
 ---
 
-## 🌟 Key Features
+##  Key Features
 
-- 📍 **Real-time Live Tracking** – Monitor circle members with millisecond-accurate updates.
-- ⚡ **Silent Remote Trigger** – "Ping" a member's device to force a location update even if the app is in the background.
-- 🏎️ **Smooth Map Animations** – Experience fluid marker movements powered by `flutter_map_animations`.
-- 🔋 **Battery-Aware Logic** – Intelligent heartbeat system (10-min idle / 30-sec moving) to preserve battery life.
-- 📱 **Interactive UI** – Modern Draggable Bottom Sheet for quick access to member status and battery levels.
+-  **Real-time Live Tracking** – Monitor circle members with millisecond-accurate updates.
+-  **Silent Remote Trigger** – "Ping" a member's device to force a location update even if the app is in the background.
+-  **Smooth Map Animations** – Experience fluid marker movements powered by `flutter_map_animations`.
+-  **Battery-Aware Logic** – Intelligent heartbeat system (10-min idle / 30-sec moving) to preserve battery life.
+-  **Interactive UI** – Modern Draggable Bottom Sheet for quick access to member status and battery levels.
 
 ---
 
-## 🛠️ Technology Stack
+##  Technology Stack
 
 | Category | Technology |
 | :--- | :--- |
@@ -30,7 +30,7 @@
 
 ---
 
-## 📐 System Architecture
+##  System Architecture
 
 SwiftLoc is built with scalability in mind, separating concerns into clear layers:
 
@@ -40,7 +40,7 @@ SwiftLoc is built with scalability in mind, separating concerns into clear layer
 
 ---
 
-## ⚙️ Installation & Setup
+##  Installation & Setup
 
 > [!IMPORTANT]
 > For security reasons, sensitive files like `google-services.json`, `GoogleService-Info.plist`, and `.env` are **not included** in this repository.
@@ -81,7 +81,7 @@ SwiftLoc is built with scalability in mind, separating concerns into clear layer
 
     flutter run
 
-## 📁 Repository Structure
+##  Repository Structure
 ```Plaintext
 
 lib/
